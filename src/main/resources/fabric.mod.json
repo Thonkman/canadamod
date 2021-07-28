@@ -1,0 +1,34 @@
+{
+  "schemaVersion": 1,
+  "id": "canadamod",
+  "version": "${version}",
+  "name": "Canadamod",
+  "description": "canada",
+  "authors": [
+    "ioxom",
+    "thonkman"
+  ],
+  "contact": {
+    "website": "no",
+    "repo": "https://github.com/Thonkman/canadamod"
+  },
+  "license": "MIT",
+  "icon": "assets/canadamod/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "client": [
+      "canadamod.canadamod.client.CanadamodClient"
+    ],
+    "main": [
+      "canadamod.canadamod.Canadamod"
+    ]
+  },
+  "mixins": [
+    "canadamod.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.11.6",
+    "fabric": "*",
+    "minecraft": "1.17.1"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "saskatoon_pick_1": {
+    "sounds": [
+      "canadamod:saskatoon_pick_1"
+    ]
+  },
+  "saskatoon_pick_2": {
+    "sounds": [
+      "canadamod:saskatoon_pick_2"
+    ]
+  },
+  "saskatoon_pick_3": {
+    "sounds": [
+      "canadamod:saskatoon_pick_3"
+    ]
+  }
+}
