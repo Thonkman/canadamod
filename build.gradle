@@ -23,6 +23,10 @@ dependencies {
     // You may need to force-disable transitiveness on them.
 }
 
+loom {
+    accessWidenerPath = file("src/main/resources/canadamod.accesswidener")
+}
+
 processResources {
     inputs.property "version", project.version
 
@@ -55,25 +59,4 @@ task sourcesJar(type: Jar, dependsOn: classes) {
 
 jar {
     from "LICENSE"
-}
-
-// configure the maven publication
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            // add all the jars that should be included when publishing to maven
-            artifact(remapJar) {
-                builtBy remapJar
-            }
-            artifact(sourcesJar) {
-                builtBy remapSourcesJar
-            }
-        }
-    }
-
-    // select the repositories you want to publish to
-    repositories {
-        // uncomment to publish to the local maven
-        // mavenLocal()
-    }
 }

@@ -1,14 +1,15 @@
 package canadamod.canadamod.client;
 
 import canadamod.canadamod.Canadamod;
-import canadamod.canadamod.block.BoxScreen;
+import canadamod.canadamod.block.carbonator.CarbonatorScreen;
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.screenhandler.v1.ScreenRegistry;
 
-@net.fabricmc.api.Environment(net.fabricmc.api.EnvType.CLIENT)
+@Environment(net.fabricmc.api.EnvType.CLIENT)
 public class CanadamodClient implements ClientModInitializer {
 
     public void onInitializeClient() {
-        //ScreenRegistry.register(Canadamod.BOX_SCREEN_HANDLER, BoxScreen::new);
+        ScreenRegistry.register(Canadamod.CARBONATOR_SCREEN_HANDLER, CarbonatorScreen::new);
     }
 }
