@@ -1,6 +1,7 @@
 package canadamod.canadamod.block.carbonator;
 
 import canadamod.canadamod.Canadamod;
+import canadamod.canadamod.registry.CanadamodBlocks;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -19,7 +20,7 @@ public class CarbonatorBlockEntity extends BlockEntity implements NamedScreenHan
     private final DefaultedList<ItemStack> inventory = DefaultedList.ofSize(9, ItemStack.EMPTY);
 
     public CarbonatorBlockEntity(BlockPos pos, BlockState state) {
-        super(Canadamod.CARBONATOR_ENTITY, pos, state);
+        super(CanadamodBlocks.CARBONATOR_ENTITY, pos, state);
     }
 
 

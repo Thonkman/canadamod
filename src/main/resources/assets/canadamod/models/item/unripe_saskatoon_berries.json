@@ -1,0 +1,6 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "canadamod:items/unripe_saskatoon_berries"
+  }
+}

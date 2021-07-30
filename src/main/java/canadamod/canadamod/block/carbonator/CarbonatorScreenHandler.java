@@ -1,6 +1,7 @@
 package canadamod.canadamod.block.carbonator;
 
 import canadamod.canadamod.Canadamod;
+import canadamod.canadamod.registry.CanadamodBlocks;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
@@ -23,7 +24,7 @@ public class CarbonatorScreenHandler extends ScreenHandler {
     //This constructor gets called from the BlockEntity on the server without calling the other constructor first, the server knows the inventory of the container
     //and can therefore directly provide it as an argument. This inventory will then be synced to the client.
     public CarbonatorScreenHandler(int syncId, PlayerInventory playerInventory, Inventory inventory) {
-        super(Canadamod.CARBONATOR_SCREEN_HANDLER, syncId);
+        super(CanadamodBlocks.CARBONATOR_SCREEN_HANDLER, syncId);
         checkSize(inventory, 9);
         this.inventory = inventory;
         //some inventories do custom logic when a player opens it.
