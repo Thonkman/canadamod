@@ -2,6 +2,8 @@ package canadamod.canadamod.registry;
 
 
 import canadamod.canadamod.Canadamod;
+import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.FoodComponent;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
@@ -19,5 +21,6 @@ public class CanadamodItems {
     public static void registerItems() {
         Registry.register(Registry.ITEM, new Identifier(Canadamod.MOD_ID, "saskatoon_berries"), SASKATOON_BEWWIES);
         Registry.register(Registry.ITEM, new Identifier(Canadamod.MOD_ID, "unripe_saskatoon_berries"), UNRIPE_SASKATOON_BEWWIES);
+        Registry.register(Registry.ITEM, new Identifier(Canadamod.MOD_ID), new BlockItem(CanadamodBlocks.CARBONATOR_BLOCK, new FabricItemSettings().group(ItemGroup.BREWING)));
     }
 }

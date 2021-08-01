@@ -1,14 +1,24 @@
 package canadamod.canadamod.block.carbonator;
 
-import canadamod.canadamod.Canadamod;
 import canadamod.canadamod.registry.CanadamodBlocks;
+import net.minecraft.advancement.criterion.Criteria;
+import net.minecraft.block.entity.BrewingStandBlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
+import net.minecraft.potion.Potion;
+import net.minecraft.potion.PotionUtil;
+import net.minecraft.recipe.BrewingRecipeRegistry;
+import net.minecraft.screen.ArrayPropertyDelegate;
+import net.minecraft.screen.BrewingStandScreenHandler;
+import net.minecraft.screen.BrewingStandScreenHandler.*;
+import net.minecraft.screen.PropertyDelegate;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
+import net.minecraft.server.network.ServerPlayerEntity;
 
 public class CarbonatorScreenHandler extends ScreenHandler {
     private final Inventory inventory;
@@ -17,16 +27,25 @@ public class CarbonatorScreenHandler extends ScreenHandler {
     //The client will call the other constructor with an empty Inventory and the screenHandler will automatically
     //sync this empty inventory with the inventory on the server.
     public CarbonatorScreenHandler(int syncId, PlayerInventory playerInventory) {
-        this(syncId, playerInventory, new SimpleInventory(9));
+        this(syncId, playerInventory, new SimpleInventory(5), new ArrayPropertyDelegate(2));
     }
 
 
     //This constructor gets called from the BlockEntity on the server without calling the other constructor first, the server knows the inventory of the container
     //and can therefore directly provide it as an argument. This inventory will then be synced to the client.
-    public CarbonatorScreenHandler(int syncId, PlayerInventory playerInventory, Inventory inventory) {
+    public CarbonatorScreenHandler(int syncId, PlayerInventory playerInventory, Inventory inventory, PropertyDelegate propertyDelegate) {
         super(CanadamodBlocks.CARBONATOR_SCREEN_HANDLER, syncId);
-        checkSize(inventory, 9);
+        checkSize(inventory, 5);
+        checkDataCount(propertyDelegate, 2);
         this.inventory = inventory;
+        //hello
+        this.propertyDelegate = propertyDelegate; //whee
+        this.addSlot(new PotionSlot(inventory, 0, 57, 51));
+        this.addSlot(new PotionSlot(inventory, 1, 79, 58));
+        this.addSlot(new PotionSlot(inventory, 2, 102, 51));
+        this.ingredientSlot = this.addSlot(new IngredientSlot(inventory, 3, 79, 17));
+        this.addSlot(new FuelSlot(inventory, 4, 17, 17));
+        this.addProperties(propertyDelegate);
         //some inventories do custom logic when a player opens it.
         inventory.onOpen(playerInventory.player);
 
@@ -36,8 +55,8 @@ public class CarbonatorScreenHandler extends ScreenHandler {
         int l;
         //Our inventory
         for (m = 0; m < 3; ++m) {
-            for (l = 0; l < 3; ++l) {
-                this.addSlot(new Slot(inventory, l + m * 3, 62 + l * 18, 17 + m * 18));
+            for (l = 0; l < 9; ++l) {
+                this.addSlot(new Slot(inventory, l + m * 9 + 9, 8 + l * 18, 84 + m * 18));
             }
         }
         //The player inventory
@@ -51,6 +70,64 @@ public class CarbonatorScreenHandler extends ScreenHandler {
             this.addSlot(new Slot(playerInventory, m, 8 + m * 18, 142));
         }
 
+    }
+
+    static class PotionSlot extends Slot {
+        public PotionSlot(Inventory inventory, int i, int j, int k) {
+            super(inventory, i, j, k);
+        }
+
+        public boolean canInsert(ItemStack stack) {
+            return matches(stack);
+        }
+
+        public int getMaxItemCount() {
+            return 1;
+        }
+        //TODO: Make a new criteria to save me 3000 years worth of time
+        public void onTakeItem(PlayerEntity player, ItemStack stack) {
+            Potion potion = PotionUtil.getPotion(stack);
+            if (player instanceof ServerPlayerEntity) {
+                Criteria.BREWED_POTION.trigger((ServerPlayerEntity)player, potion);
+            }
+
+            super.onTakeItem(player, stack);
+        }
+
+        public static boolean matches(ItemStack stack) {
+            return stack.isOf(Items.POTION) || stack.isOf(Items.SPLASH_POTION) || stack.isOf(Items.LINGERING_POTION) || stack.isOf(Items.GLASS_BOTTLE);
+        }
+    }
+    //TODO: Make registry that contains carbonator ingredients/fuels
+    static class IngredientSlot extends Slot {
+        public IngredientSlot(Inventory inventory, int i, int j, int k) {
+            super(inventory, i, j, k);
+        }
+
+        public boolean canInsert(ItemStack stack) {
+            return BrewingRecipeRegistry.isValidIngredient(stack);
+        }
+
+        public int getMaxItemCount() {
+            return 64;
+        }
+    }
+    static class FuelSlot extends Slot {
+        public FuelSlot(Inventory inventory, int i, int j, int k) {
+            super(inventory, i, j, k);
+        }
+
+        public boolean canInsert(ItemStack stack) {
+            return matches(stack);
+        }
+
+        public static boolean matches(ItemStack stack) {
+            return stack.isOf(Items.BLAZE_POWDER);
+        }
+
+        public int getMaxItemCount() {
+            return 64;
+        }
     }
 
     @Override
