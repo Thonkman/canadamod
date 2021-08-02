@@ -2,7 +2,6 @@ package canadamod.canadamod.block.carbonator;
 
 import canadamod.canadamod.registry.CanadamodBlocks;
 import net.minecraft.advancement.criterion.Criteria;
-import net.minecraft.block.entity.BrewingStandBlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
@@ -13,8 +12,6 @@ import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionUtil;
 import net.minecraft.recipe.BrewingRecipeRegistry;
 import net.minecraft.screen.ArrayPropertyDelegate;
-import net.minecraft.screen.BrewingStandScreenHandler;
-import net.minecraft.screen.BrewingStandScreenHandler.*;
 import net.minecraft.screen.PropertyDelegate;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
@@ -22,6 +19,8 @@ import net.minecraft.server.network.ServerPlayerEntity;
 
 public class CarbonatorScreenHandler extends ScreenHandler {
     private final Inventory inventory;
+    private PropertyDelegate propertyDelegate;
+    private final Slot ingredientSlot;
 
     //This constructor gets called on the client when the server wants it to open the screenHandler,
     //The client will call the other constructor with an empty Inventory and the screenHandler will automatically
@@ -65,7 +64,7 @@ public class CarbonatorScreenHandler extends ScreenHandler {
         }
 
     }
-        //The player Hotbar
+    //The player Hotbar
 
 
     static class PotionSlot extends Slot {

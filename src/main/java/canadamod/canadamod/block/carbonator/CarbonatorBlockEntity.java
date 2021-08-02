@@ -1,7 +1,5 @@
 package canadamod.canadamod.block.carbonator;
 
-import canadamod.canadamod.Canadamod;
-
 import net.minecraft.screen.ArrayPropertyDelegate;
 import canadamod.canadamod.registry.CanadamodBlocks;
 import net.minecraft.block.BlockState;
@@ -42,7 +40,7 @@ public class CarbonatorBlockEntity extends BlockEntity implements NamedScreenHan
     public ScreenHandler createMenu(int syncId, PlayerInventory playerInventory, PlayerEntity player) {
         //We provide *this* to the screenHandler as our class Implements Inventory
         //Only the Server has the Inventory at the start, this will be synced to the client in the ScreenHandler
-        return new CarbonatorScreenHandler(syncId, playerInventory, this);
+        return new CarbonatorScreenHandler(syncId, playerInventory, this, new ArrayPropertyDelegate(2));
     }
 
     @Override
