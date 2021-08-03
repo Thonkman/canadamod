@@ -1,7 +1,6 @@
 package canadamod.canadamod.block.plant;
 
 import canadamod.canadamod.registry.Sounds;
-import canadamod.canadamod.registry.items.BerryItem;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -34,9 +33,8 @@ import java.util.List;
 import java.util.Random;
 
 @SuppressWarnings("deprecation")
-//TODO: we aren't dropping berries since the introduction of BerryItem
 public class BasicBerryBush extends PlantBlock implements Fertilizable {
-    private final BerryItem berryType;
+    private final Item berryType;
     private final Item unripeBerryType;
     private static final IntProperty BERRY_AGE = IntProperty.of("age", 0 ,10);
     private final int maxBerryAge;
@@ -51,7 +49,7 @@ public class BasicBerryBush extends PlantBlock implements Fertilizable {
      * @param smallShape small voxel shape for the bush
      * @param largeShape large voxel shape for the bush
      */
-    public BasicBerryBush(AbstractBlock.Settings settings, BerryItem berryType, int maxBerryAge, VoxelShape smallShape, VoxelShape largeShape) {
+    public BasicBerryBush(AbstractBlock.Settings settings, Item berryType, int maxBerryAge, VoxelShape smallShape, VoxelShape largeShape) {
         this(settings, berryType, null, maxBerryAge, smallShape, largeShape);
     }
 
@@ -64,9 +62,8 @@ public class BasicBerryBush extends PlantBlock implements Fertilizable {
      * @param smallShape small voxel shape for the bush
      * @param largeShape large voxel shape for the bush
      */
-    public BasicBerryBush(AbstractBlock.Settings settings, BerryItem berryType, Item unripeBerryType, int maxBerryAge, VoxelShape smallShape, VoxelShape largeShape) {
+    public BasicBerryBush(AbstractBlock.Settings settings, Item berryType, Item unripeBerryType, int maxBerryAge, VoxelShape smallShape, VoxelShape largeShape) {
         super(settings);
-        berryType.addAssociatedBush(this);
         this.berryType = berryType;
         this.maxBerryAge = maxBerryAge;
         this.smallShape = smallShape;

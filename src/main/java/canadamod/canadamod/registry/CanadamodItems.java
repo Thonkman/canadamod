@@ -1,8 +1,8 @@
-package canadamod.canadamod.registry.items;
+package canadamod.canadamod.registry;
 
 import canadamod.canadamod.Canadamod;
-import canadamod.canadamod.registry.CanadamodBlocks;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
+import net.minecraft.item.AliasedBlockItem;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.FoodComponent;
 import net.minecraft.item.Item;
@@ -13,12 +13,13 @@ import net.minecraft.util.registry.Registry;
 public class CanadamodItems {
 
     //TODO: make compostable
-    public static final BerryItem SASKATOON_BERRIES = new BerryItem(new Item.Settings().group(ItemGroup.FOOD).food(new FoodComponent.Builder().hunger(2).saturationModifier(2f).snack().build()), null);
+    public static final Item SASKATOON_BERRIES = new AliasedBlockItem(Bushes.SASKATOON_BERRY_BUSH, new Item.Settings().group(ItemGroup.FOOD).food(new FoodComponent.Builder().hunger(2).saturationModifier(2f).snack().build()));
+    //public static final BerryItem SASKATOON_BERRIES = new BerryItem(new Item.Settings().group(ItemGroup.FOOD).food(new FoodComponent.Builder().hunger(2).saturationModifier(2f).snack().build()));
     public static final Item UNRIPE_SASKATOON_BERRIES = new Item(new Item.Settings().group(ItemGroup.FOOD).food(new FoodComponent.Builder().hunger(1).saturationModifier(2f).snack().build()));
 
-    public static final BerryItem STRAWBERRIES = new BerryItem(new Item.Settings().group(ItemGroup.FOOD).food(new FoodComponent.Builder().hunger(3).saturationModifier(1.5f).snack().build()), null);
-    public static final BerryItem RASPBERRIES = new BerryItem(new Item.Settings().group(ItemGroup.FOOD).food(new FoodComponent.Builder().hunger(1).saturationModifier(4f).snack().build()), null);
-    public static final BerryItem BLACKBERRIES = new BerryItem(new Item.Settings().group(ItemGroup.FOOD).food(new FoodComponent.Builder().hunger(1).saturationModifier(3.5f).snack().build()), null);
+    public static final Item STRAWBERRIES = new AliasedBlockItem(Bushes.STRAWBERRY_BUSH, new Item.Settings().group(ItemGroup.FOOD).food(new FoodComponent.Builder().hunger(3).saturationModifier(1.5f).snack().build()));
+    public static final Item RASPBERRIES = new AliasedBlockItem(Bushes.RASPBERRY_BUSH, new Item.Settings().group(ItemGroup.FOOD).food(new FoodComponent.Builder().hunger(1).saturationModifier(4f).snack().build()));
+    public static final Item BLACKBERRIES = new AliasedBlockItem(Bushes.BLACKBERRY_BUSH, new Item.Settings().group(ItemGroup.FOOD).food(new FoodComponent.Builder().hunger(1).saturationModifier(3.5f).snack().build()));
 
     public static void registerItems() {
         Registry.register(Registry.ITEM, Canadamod.getIdentifier("saskatoon_berries"), SASKATOON_BERRIES);
