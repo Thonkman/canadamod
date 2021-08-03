@@ -4,6 +4,7 @@
   "package": "canadamod.canadamod.mixin",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
+    "CompostableItemInvoker"
   ],
   "client": [
   ],

@@ -34,8 +34,8 @@ import java.util.Random;
 
 @SuppressWarnings("deprecation")
 public class BasicBerryBush extends PlantBlock implements Fertilizable {
-    private final Item berryType;
-    private final Item unripeBerryType;
+    private Item berryType;
+    private Item unripeBerryType;
     private static final IntProperty BERRY_AGE = IntProperty.of("age", 0 ,10);
     private final int maxBerryAge;
     private final VoxelShape smallShape;
@@ -71,6 +71,22 @@ public class BasicBerryBush extends PlantBlock implements Fertilizable {
         this.unripeBerryType = unripeBerryType;
         //set default age to 0
         this.setDefaultState((this.stateManager.getDefaultState()).with(BERRY_AGE, 0));
+    }
+
+    /**
+     * sets the berry type
+     * @param berryType the item to use
+     */
+    public void setBerryType(Item berryType) {
+        this.berryType = berryType;
+    }
+
+    /**
+     * sets the unripe berry type
+     * @param unripeBerryType the item to use
+     */
+    public void setUnripeBerryType(Item unripeBerryType) {
+        this.unripeBerryType = unripeBerryType;
     }
 
     /**
@@ -145,6 +161,10 @@ public class BasicBerryBush extends PlantBlock implements Fertilizable {
      * @return whether the action fails or passes
      */
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+        if (berryType == null) {
+            throw new RuntimeException("parameter berryType is null, use method setBerryType(Item) to ensure that it is set before the berry bush is registered");
+        }
+
         int currentBerryAge = state.get(BERRY_AGE);
         boolean canGrow = canGrow(state);
         //if bone meal is allowed to be used, pass action

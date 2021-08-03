@@ -1,6 +1,5 @@
 package canadamod.canadamod.client;
 
-import canadamod.canadamod.Canadamod;
 import canadamod.canadamod.block.carbonator.CarbonatorScreen;
 import canadamod.canadamod.registry.CanadamodBlocks;
 import net.fabricmc.api.ClientModInitializer;
