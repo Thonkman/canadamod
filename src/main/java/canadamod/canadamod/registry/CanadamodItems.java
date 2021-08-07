@@ -1,8 +1,8 @@
 package canadamod.canadamod.registry;
 
 import canadamod.canadamod.Canadamod;
-import canadamod.canadamod.mixin.CompostableItemInvoker;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
+import net.fabricmc.fabric.impl.content.registry.CompostingChanceRegistryImpl;
 import net.minecraft.item.AliasedBlockItem;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.FoodComponent;
@@ -13,7 +13,7 @@ import net.minecraft.util.registry.Registry;
 
 public class CanadamodItems {
     private static void registerCompostableBerry(Item berry) {
-        CompostableItemInvoker.invokeRegisterCompostableItem(0.4F, berry);
+        CompostingChanceRegistryImpl.INSTANCE.add(berry, 0.4F);
     }
 
     //berry items
