@@ -12,8 +12,10 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
 public class CanadamodItems {
+    private static final float BERRY_COMPOST_LEVEL_INCREASE_CHANCE = 0.4f;
+
     private static void registerCompostableBerry(Item berry) {
-        CompostingChanceRegistryImpl.INSTANCE.add(berry, 0.4F);
+        CompostingChanceRegistryImpl.INSTANCE.add(berry, BERRY_COMPOST_LEVEL_INCREASE_CHANCE);
     }
 
     //berry items

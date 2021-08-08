@@ -1,12 +1,14 @@
 package canadamod.canadamod.block.plant;
 
 import canadamod.canadamod.registry.Sounds;
+import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Fertilizable;
 import net.minecraft.block.PlantBlock;
 import net.minecraft.block.ShapeContext;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -40,6 +42,7 @@ public class BasicBerryBush extends PlantBlock implements Fertilizable {
     private final int maxBerryAge;
     private final VoxelShape smallShape;
     private final VoxelShape largeShape;
+    private final int sizeChangeAge;
 
     /**
      * default berry bush constructor
@@ -49,8 +52,8 @@ public class BasicBerryBush extends PlantBlock implements Fertilizable {
      * @param smallShape small voxel shape for the bush
      * @param largeShape large voxel shape for the bush
      */
-    public BasicBerryBush(AbstractBlock.Settings settings, Item berryType, int maxBerryAge, VoxelShape smallShape, VoxelShape largeShape) {
-        this(settings, berryType, null, maxBerryAge, smallShape, largeShape);
+    public BasicBerryBush(AbstractBlock.Settings settings, Item berryType, int maxBerryAge, VoxelShape smallShape, VoxelShape largeShape, int sizeChangeAge) {
+        this(settings, berryType, null, maxBerryAge, smallShape, largeShape, sizeChangeAge);
     }
 
     /**
@@ -62,15 +65,18 @@ public class BasicBerryBush extends PlantBlock implements Fertilizable {
      * @param smallShape small voxel shape for the bush
      * @param largeShape large voxel shape for the bush
      */
-    public BasicBerryBush(AbstractBlock.Settings settings, Item berryType, Item unripeBerryType, int maxBerryAge, VoxelShape smallShape, VoxelShape largeShape) {
-        super(settings);
+    public BasicBerryBush(AbstractBlock.Settings settings, Item berryType, Item unripeBerryType, int maxBerryAge, VoxelShape smallShape, VoxelShape largeShape, int sizeChangeAge) {
+        super(settings.nonOpaque());
         this.berryType = berryType;
         this.maxBerryAge = maxBerryAge;
         this.smallShape = smallShape;
         this.largeShape = largeShape;
         this.unripeBerryType = unripeBerryType;
+        this.sizeChangeAge = sizeChangeAge;
         //set default age to 0
         this.setDefaultState((this.stateManager.getDefaultState()).with(BERRY_AGE, 0));
+        //ensure cutout texture is rendered
+        BlockRenderLayerMap.INSTANCE.putBlock(this, RenderLayer.getCutout());
     }
 
     /**
@@ -104,7 +110,7 @@ public class BasicBerryBush extends PlantBlock implements Fertilizable {
     public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
         int age = state.get(BERRY_AGE);
 
-        if (age == 0) {
+        if (age < sizeChangeAge) {
             return smallShape;
         } else {
             return largeShape;
@@ -210,7 +216,7 @@ public class BasicBerryBush extends PlantBlock implements Fertilizable {
             }
 
             //reset berry growth; they were just picked
-            world.setBlockState(pos, state.with(BERRY_AGE, 1), 2);
+            world.setBlockState(pos, state.with(BERRY_AGE, sizeChangeAge), 2);
             return ActionResult.success(world.isClient);
         } else {
             //otherwise, do default use action from superclass

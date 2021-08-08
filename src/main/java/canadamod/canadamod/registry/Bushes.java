@@ -19,13 +19,13 @@ public class Bushes {
     private static final AbstractBlock.Settings berryBushSettings = AbstractBlock.Settings.of(Material.PLANT).ticksRandomly().noCollision().sounds(BlockSoundGroup.SWEET_BERRY_BUSH);
 
     public static final BasicBerryBush SASKATOON_BERRY_BUSH = new BasicBerryBush(berryBushSettings, CanadamodItems.SASKATOON_BERRIES, CanadamodItems.UNRIPE_SASKATOON_BERRIES,
-            5, SMALL_SWEET_BERRY, LARGE_SWEET_BERRY);
+            5, SMALL_SWEET_BERRY, LARGE_SWEET_BERRY, 2);
     public static final BasicBerryBush STRAWBERRY_BUSH = new BasicBerryBush(berryBushSettings, CanadamodItems.STRAWBERRIES,
-                3, SMALL_SWEET_BERRY, LARGE_STRAWBERRY);
+                3, SMALL_SWEET_BERRY, LARGE_STRAWBERRY, 1);
     public static final BasicBerryBush RASPBERRY_BUSH = new BasicBerryBush(berryBushSettings, CanadamodItems.RASPBERRIES,
-            4, SMALL_SWEET_BERRY, LARGE_SWEET_BERRY);
+            4, SMALL_SWEET_BERRY, LARGE_SWEET_BERRY, 2);
     public static final BasicBerryBush BLACKBERRY_BUSH = new BasicBerryBush(berryBushSettings, CanadamodItems.BLACKBERRIES,
-            4, SMALL_SWEET_BERRY, LARGE_SWEET_BERRY);
+            4, SMALL_SWEET_BERRY, LARGE_SWEET_BERRY, 2);
 
     public static void registerBushes() {
         SASKATOON_BERRY_BUSH.setBerryType(CanadamodItems.SASKATOON_BERRIES);
