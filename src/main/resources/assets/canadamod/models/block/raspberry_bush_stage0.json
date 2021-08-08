@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/cross",
+  "textures": {
+    "cross": "canadamod:block/raspberry_bush_stage0"
+  }
+}

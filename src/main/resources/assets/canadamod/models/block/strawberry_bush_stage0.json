@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/cross",
+  "textures": {
+    "cross": "canadamod:block/strawberry_bush_stage0"
+  }
+}
