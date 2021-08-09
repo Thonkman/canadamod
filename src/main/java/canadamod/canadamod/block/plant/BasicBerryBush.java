@@ -12,6 +12,7 @@ import net.minecraft.client.render.RenderLayer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -43,6 +44,8 @@ public class BasicBerryBush extends PlantBlock implements Fertilizable {
     private final VoxelShape smallShape;
     private final VoxelShape largeShape;
     private final int sizeChangeAge;
+    private final boolean spiky;
+    private final DamageSource damageSource;
 
     /**
      * default berry bush constructor
@@ -51,21 +54,25 @@ public class BasicBerryBush extends PlantBlock implements Fertilizable {
      * @param maxBerryAge maximum age bush can grow to
      * @param smallShape small voxel shape for the bush
      * @param largeShape large voxel shape for the bush
+     * @param sizeChangeAge the age when the bush switches from smallShape to largeShape, this will also be the age it resets to when berries are picked
      */
-    public BasicBerryBush(AbstractBlock.Settings settings, Item berryType, int maxBerryAge, VoxelShape smallShape, VoxelShape largeShape, int sizeChangeAge) {
-        this(settings, berryType, null, maxBerryAge, smallShape, largeShape, sizeChangeAge);
+    public BasicBerryBush(String name, AbstractBlock.Settings settings, Item berryType, int maxBerryAge, VoxelShape smallShape, VoxelShape largeShape, int sizeChangeAge, boolean spiky) {
+        this(name, settings, berryType, null, maxBerryAge, smallShape, largeShape, sizeChangeAge, spiky);
     }
 
     /**
      * secondary berry bush constructor
+     * @param name the name of the bush, this should be in the format {@code somethingBerryBush}
      * @param settings block settings for this berry bush
      * @param berryType which berries will be given when this bush is picked from
      * @param unripeBerryType which type of berries will be given when this bush is picked from, but not yet fully grown
      * @param maxBerryAge maximum age bush can grow to
      * @param smallShape small voxel shape for the bush
      * @param largeShape large voxel shape for the bush
+     * @param sizeChangeAge the age when the bush switches from smallShape to largeShape, this will also be the age it resets to when berries are picked
      */
-    public BasicBerryBush(AbstractBlock.Settings settings, Item berryType, Item unripeBerryType, int maxBerryAge, VoxelShape smallShape, VoxelShape largeShape, int sizeChangeAge) {
+    public BasicBerryBush(String name, AbstractBlock.Settings settings, Item berryType, Item unripeBerryType, int maxBerryAge, VoxelShape smallShape, VoxelShape largeShape, int sizeChangeAge, boolean spiky) {
+        //add nonOpaque to settings to ensure that the bush isn't considered a solid block when rendering
         super(settings.nonOpaque());
         this.berryType = berryType;
         this.maxBerryAge = maxBerryAge;
@@ -73,6 +80,8 @@ public class BasicBerryBush extends PlantBlock implements Fertilizable {
         this.largeShape = largeShape;
         this.unripeBerryType = unripeBerryType;
         this.sizeChangeAge = sizeChangeAge;
+        this.spiky = spiky;
+        this.damageSource = this.spiky ? new DamageSourceTwoElectricBoogaloo(name) : null;
         //set default age to 0
         this.setDefaultState((this.stateManager.getDefaultState()).with(BERRY_AGE, 0));
         //ensure cutout texture is rendered
@@ -121,7 +130,7 @@ public class BasicBerryBush extends PlantBlock implements Fertilizable {
      * determines whether this block still needs to be random ticked - i.e. whether it can still grow or not
      */
     public boolean hasRandomTicks(BlockState state) {
-        return canGrow(state);
+        return state.get(BERRY_AGE) < maxBerryAge;
     }
 
     /**
@@ -157,6 +166,10 @@ public class BasicBerryBush extends PlantBlock implements Fertilizable {
 
         if (entity instanceof LivingEntity && !entities.contains(type)) {
             entity.slowMovement(state, new Vec3d(0.5D, 0.25D, 0.5D));
+            //damage as well if our bush is thorny
+            if (spiky) {
+                entity.damage(damageSource, 1.0F);
+            }
         }
     }
 
@@ -171,20 +184,20 @@ public class BasicBerryBush extends PlantBlock implements Fertilizable {
             throw new RuntimeException("parameter berryType is null, use method setBerryType(Item) to ensure that it is set before the berry bush is registered");
         }
 
-        int currentBerryAge = state.get(BERRY_AGE);
-        boolean canGrow = canGrow(state);
-        //if bone meal is allowed to be used, pass action
-        if (canGrow(state) && player.getStackInHand(hand).isOf(Items.BONE_MEAL)) {
-            int newAge = Math.min(maxBerryAge, currentBerryAge + 1);
+        final int currentBerryAge = state.get(BERRY_AGE);
+        final boolean canGrow = hasRandomTicks(state);
+        //if bone meal is allowed to be used, grow plant and pass action
+        if (canGrow && player.getStackInHand(hand).isOf(Items.BONE_MEAL)) {
+            final int newAge = Math.min(maxBerryAge, currentBerryAge + 1);
             world.setBlockState(pos, state.with(BERRY_AGE, newAge), 2);
             return ActionResult.PASS;
         //otherwise, give berries/unripe berries
         } else if (currentBerryAge > 1) {
             //pick random sound
-            SoundEvent sound = switch (world.random.nextInt(3)) {
-                case 1 -> Sounds.SASKATOON_PICK_2_EVENT;
-                case 2 -> Sounds.SASKATOON_PICK_3_EVENT;
-                default -> Sounds.SASKATOON_PICK_1_EVENT;
+            final SoundEvent sound = switch (world.random.nextInt(3)) {
+                case 1 -> Sounds.BERRY_PICK_2;
+                case 2 -> Sounds.BERRY_PICK_3;
+                default -> Sounds.BERRY_PICK_1;
             };
 
             //random pitch, default volume of 1
@@ -233,22 +246,16 @@ public class BasicBerryBush extends PlantBlock implements Fertilizable {
      * @return true if the plant can grow, false if it can't
      */
     public boolean isFertilizable(BlockView world, BlockPos pos, BlockState state, boolean isClient) {
-        return canGrow(state);
+        //hasRandomTicks checks the same thing as this method
+        return hasRandomTicks(state);
     }
 
     /**
-     * returns whether the bush can grow: true if it can grow, false if it can't
-     * @param state the bush's {@link BlockState}
-     */
-    public boolean canGrow(BlockState state) {
-        return state.get(BERRY_AGE) < maxBerryAge;
-    }
-
-    /**
-     * implementation of {@link BasicBerryBush#canGrow(BlockState)} used by minecraft's berry bushes
+     * checks if the bush can grow
      */
     public boolean canGrow(World world, Random random, BlockPos pos, BlockState state) {
-        return canGrow(state);
+        //hasRandomTicks checks the same thing as this method
+        return hasRandomTicks(state);
     }
 
     /**
@@ -257,5 +264,14 @@ public class BasicBerryBush extends PlantBlock implements Fertilizable {
     public void grow(ServerWorld world, Random random, BlockPos pos, BlockState state) {
         int newAge = Math.min(maxBerryAge, state.get(BERRY_AGE) + 1);
         world.setBlockState(pos, state.with(BERRY_AGE, newAge), 2);
+    }
+
+    /**
+     * this class is an easy way to make a new damage source, as the constructor in {@link DamageSource} itself is protected
+     */
+    private static class DamageSourceTwoElectricBoogaloo extends DamageSource {
+        public DamageSourceTwoElectricBoogaloo(String name) {
+            super(name);
+        }
     }
 }

@@ -15,17 +15,17 @@ public class Bushes {
 
     private static final VoxelShape LARGE_STRAWBERRY = Block.createCuboidShape(2.0D, 0.0D, 2.0D, 13.0D, 10.0D, 13.0D);
 
-    //berry bush settings
     private static final AbstractBlock.Settings berryBushSettings = AbstractBlock.Settings.of(Material.PLANT).ticksRandomly().noCollision().sounds(BlockSoundGroup.SWEET_BERRY_BUSH);
 
-    public static final BasicBerryBush SASKATOON_BERRY_BUSH = new BasicBerryBush(berryBushSettings, CanadamodItems.SASKATOON_BERRIES, CanadamodItems.UNRIPE_SASKATOON_BERRIES,
-            5, SMALL_SWEET_BERRY, LARGE_SWEET_BERRY, 2);
-    public static final BasicBerryBush STRAWBERRY_BUSH = new BasicBerryBush(berryBushSettings, CanadamodItems.STRAWBERRIES,
-                3, SMALL_SWEET_BERRY, LARGE_STRAWBERRY, 1);
-    public static final BasicBerryBush RASPBERRY_BUSH = new BasicBerryBush(berryBushSettings, CanadamodItems.RASPBERRIES,
-            4, SMALL_SWEET_BERRY, LARGE_SWEET_BERRY, 2);
-    public static final BasicBerryBush BLACKBERRY_BUSH = new BasicBerryBush(berryBushSettings, CanadamodItems.BLACKBERRIES,
-            4, SMALL_SWEET_BERRY, LARGE_SWEET_BERRY, 2);
+    //bushes
+    public static final BasicBerryBush SASKATOON_BERRY_BUSH = new BasicBerryBush("saskatoonBerryBush", berryBushSettings, CanadamodItems.SASKATOON_BERRIES, CanadamodItems.UNRIPE_SASKATOON_BERRIES,
+            5, SMALL_SWEET_BERRY, LARGE_SWEET_BERRY, 2, false);
+    public static final BasicBerryBush STRAWBERRY_BUSH = new BasicBerryBush("strawberryBush", berryBushSettings, CanadamodItems.STRAWBERRIES,
+                3, SMALL_SWEET_BERRY, LARGE_STRAWBERRY, 1, false);
+    public static final BasicBerryBush RASPBERRY_BUSH = new BasicBerryBush("raspberryBush", berryBushSettings, CanadamodItems.RASPBERRIES,
+            4, SMALL_SWEET_BERRY, LARGE_SWEET_BERRY, 2, true);
+    public static final BasicBerryBush BLACKBERRY_BUSH = new BasicBerryBush("blackberryBush", berryBushSettings, CanadamodItems.BLACKBERRIES,
+            4, SMALL_SWEET_BERRY, LARGE_SWEET_BERRY, 2, true);
 
     public static void registerBushes() {
         SASKATOON_BERRY_BUSH.setBerryType(CanadamodItems.SASKATOON_BERRIES);
