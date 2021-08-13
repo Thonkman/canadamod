@@ -13,7 +13,7 @@ public class CarbonatorScreen extends HandledScreen<ScreenHandler> {
     //TODO: adapt brewing stand screen code
 
     //A path to the gui texture. In this example we use the texture from the dispenser
-    private static final Identifier TEXTURE = new Identifier("minecraft", "textures/gui/container/dispenser.png");
+    private static final Identifier TEXTURE = new Identifier("minecraft", "textures/gui/container/brewing_stand.png");
 
     public CarbonatorScreen(ScreenHandler handler, PlayerInventory inventory, Text title) {
         super(handler, inventory, title);
