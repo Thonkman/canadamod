@@ -2,6 +2,7 @@ package canadamod.canadamod.registry;
 
 import canadamod.canadamod.Canadamod;
 import canadamod.canadamod.block.plant.BasicBerryBush;
+import canadamod.canadamod.block.plant.GrowingBerryBush;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.Material;
@@ -18,7 +19,7 @@ public class Bushes {
     private static final AbstractBlock.Settings berryBushSettings = AbstractBlock.Settings.of(Material.PLANT).ticksRandomly().noCollision().sounds(BlockSoundGroup.SWEET_BERRY_BUSH);
 
     //bushes
-    public static final BasicBerryBush SASKATOON_BERRY_BUSH = new BasicBerryBush("saskatoonBerryBush", berryBushSettings, CanadamodItems.SASKATOON_BERRIES, CanadamodItems.UNRIPE_SASKATOON_BERRIES,
+    public static final GrowingBerryBush SASKATOON_BERRY_BUSH = new GrowingBerryBush("saskatoonBerryBush", berryBushSettings, CanadamodItems.SASKATOON_BERRIES, CanadamodItems.UNRIPE_SASKATOON_BERRIES,
             5, SMALL_SWEET_BERRY, LARGE_SWEET_BERRY, 2, false);
     public static final BasicBerryBush STRAWBERRY_BUSH = new BasicBerryBush("strawberryBush", berryBushSettings, CanadamodItems.STRAWBERRIES,
                 3, SMALL_SWEET_BERRY, LARGE_STRAWBERRY, 1, false);

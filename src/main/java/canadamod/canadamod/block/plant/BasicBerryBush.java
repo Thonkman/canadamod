@@ -37,15 +37,29 @@ import java.util.Random;
 
 @SuppressWarnings("deprecation")
 public class BasicBerryBush extends PlantBlock implements Fertilizable {
-    private Item berryType;
-    private Item unripeBerryType;
-    private static final IntProperty BERRY_AGE = IntProperty.of("age", 0 ,10);
-    private final int maxBerryAge;
-    private final VoxelShape smallShape;
-    private final VoxelShape largeShape;
-    private final int sizeChangeAge;
-    private final boolean spiky;
-    private final DamageSource damageSource;
+    protected Item berryType;
+    protected Item unripeBerryType;
+    protected static final IntProperty BERRY_AGE = IntProperty.of("age", 0 ,10);
+    protected final int maxBerryAge;
+    protected final VoxelShape smallShape;
+    protected final VoxelShape largeShape;
+    protected final int sizeChangeAge;
+    protected final boolean spiky;
+    protected final DamageSource damageSource;
+    protected final String name;
+
+    //animals that can move through bushes without being slowed
+    public static final List<EntityType<?>> SMALL_ENTITIES = Arrays.asList(new EntityType<?>[]{
+            EntityType.FOX,
+            EntityType.BEE,
+            EntityType.RABBIT,
+            EntityType.CAT,
+            EntityType.ENDERMITE,
+            EntityType.BAT,
+            EntityType.SILVERFISH,
+            EntityType.OCELOT,
+            EntityType.PARROT
+    });
 
     /**
      * default berry bush constructor
@@ -81,6 +95,7 @@ public class BasicBerryBush extends PlantBlock implements Fertilizable {
         this.unripeBerryType = unripeBerryType;
         this.sizeChangeAge = sizeChangeAge;
         this.spiky = spiky;
+        this.name = name;
         this.damageSource = this.spiky ? new DamageSourceTwoElectricBoogaloo(name) : null;
         //set default age to 0
         this.setDefaultState((this.stateManager.getDefaultState()).with(BERRY_AGE, 0));
@@ -108,6 +123,7 @@ public class BasicBerryBush extends PlantBlock implements Fertilizable {
      * used for the pick block key
      * @return what kind of berries this block grows
      */
+    @Override
     public ItemStack getPickStack(BlockView world, BlockPos pos, BlockState state) {
         return new ItemStack(berryType);
     }
@@ -116,6 +132,7 @@ public class BasicBerryBush extends PlantBlock implements Fertilizable {
      * get the shape of this bush
      * @return a {@link VoxelShape} corresponding to its current age
      */
+    @Override
     public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
         int age = state.get(BERRY_AGE);
 
@@ -129,6 +146,7 @@ public class BasicBerryBush extends PlantBlock implements Fertilizable {
     /**
      * determines whether this block still needs to be random ticked - i.e. whether it can still grow or not
      */
+    @Override
     public boolean hasRandomTicks(BlockState state) {
         return state.get(BERRY_AGE) < maxBerryAge;
     }
@@ -137,6 +155,7 @@ public class BasicBerryBush extends PlantBlock implements Fertilizable {
      * runs when this bush is ticked
      * grows the bush if it can, a random throw is met, and light level is high enough
      */
+    @Override
     public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
         int age = state.get(BERRY_AGE);
         //if the age isn't maximum and the light level is high enough grow the bush
@@ -149,22 +168,11 @@ public class BasicBerryBush extends PlantBlock implements Fertilizable {
      * handles entity collision with our bush
      * <br> if the entity isn't on our list of small entities, slow it
      */
+    @Override
     public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
         final EntityType<?> type = entity.getType();
-        //animals that can move through bushes without being slowed
-        List<EntityType<?>> entities = Arrays.asList(new EntityType<?>[]{
-                EntityType.FOX,
-                EntityType.BEE,
-                EntityType.RABBIT,
-                EntityType.CAT,
-                EntityType.ENDERMITE,
-                EntityType.BAT,
-                EntityType.SILVERFISH,
-                EntityType.OCELOT,
-                EntityType.PARROT
-        });
 
-        if (entity instanceof LivingEntity && !entities.contains(type)) {
+        if (entity instanceof LivingEntity && !SMALL_ENTITIES.contains(type)) {
             entity.slowMovement(state, new Vec3d(0.5D, 0.25D, 0.5D));
             //damage as well if our bush is thorny
             if (spiky) {
@@ -174,11 +182,23 @@ public class BasicBerryBush extends PlantBlock implements Fertilizable {
     }
 
     /**
+     * get a random berry pick sound
+     */
+    public static SoundEvent selectPickSound() {
+        return switch (new Random().nextInt(3)) {
+            case 1 -> Sounds.BERRY_PICK_2;
+            case 2 -> Sounds.BERRY_PICK_3;
+            default -> Sounds.BERRY_PICK_1;
+        };
+    }
+
+    /**
      * handles when our berry bush is right-clicked
      * <br> if the player clicking has bone meal, grow the plant if possible or pick berries if fully grown
      * <br> otherwise, pick berries if possible
      * @return whether the action fails or passes
      */
+    @Override
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         if (berryType == null) {
             throw new RuntimeException("parameter berryType is null, use method setBerryType(Item) to ensure that it is set before the berry bush is registered");
@@ -194,11 +214,7 @@ public class BasicBerryBush extends PlantBlock implements Fertilizable {
         //otherwise, give berries/unripe berries
         } else if (currentBerryAge > 1) {
             //pick random sound
-            final SoundEvent sound = switch (world.random.nextInt(3)) {
-                case 1 -> Sounds.BERRY_PICK_2;
-                case 2 -> Sounds.BERRY_PICK_3;
-                default -> Sounds.BERRY_PICK_1;
-            };
+            final SoundEvent sound = selectPickSound();
 
             //random pitch, default volume of 1
             world.playSound(null, pos, sound, SoundCategory.BLOCKS, 1.0F, 0.8F + world.random.nextFloat() * 0.4F);
@@ -237,6 +253,7 @@ public class BasicBerryBush extends PlantBlock implements Fertilizable {
         }
     }
 
+    @Override
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
         builder.add(BERRY_AGE);
     }
@@ -245,6 +262,7 @@ public class BasicBerryBush extends PlantBlock implements Fertilizable {
      * check that the plant is bone meal-able, also known as whether the plant can grow
      * @return true if the plant can grow, false if it can't
      */
+    @Override
     public boolean isFertilizable(BlockView world, BlockPos pos, BlockState state, boolean isClient) {
         //hasRandomTicks checks the same thing as this method
         return hasRandomTicks(state);
@@ -253,6 +271,7 @@ public class BasicBerryBush extends PlantBlock implements Fertilizable {
     /**
      * checks if the bush can grow
      */
+    @Override
     public boolean canGrow(World world, Random random, BlockPos pos, BlockState state) {
         //hasRandomTicks checks the same thing as this method
         return hasRandomTicks(state);
@@ -261,6 +280,7 @@ public class BasicBerryBush extends PlantBlock implements Fertilizable {
     /**
      * grows the bush. simple as that.
      */
+    @Override
     public void grow(ServerWorld world, Random random, BlockPos pos, BlockState state) {
         int newAge = Math.min(maxBerryAge, state.get(BERRY_AGE) + 1);
         world.setBlockState(pos, state.with(BERRY_AGE, newAge), 2);
