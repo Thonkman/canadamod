@@ -1,9 +1,12 @@
 package canadamod.canadamod.block.carbonator;
 
+import canadamod.canadamod.registry.CanadamodBlocks;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.BlockWithEntity;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.BlockEntityTicker;
+import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.screen.ScreenHandler;
@@ -28,6 +31,11 @@ public class CarbonatorBlock extends BlockWithEntity {
     public BlockRenderType getRenderType(BlockState state) {
         //With inheriting from BlockWithEntity this defaults to INVISIBLE, so we need to change that!
         return BlockRenderType.MODEL;
+    }
+
+    @Override
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
+        return checkType(type, CanadamodBlocks.CARBONATOR_ENTITY, (world1, pos, state1, be) -> CarbonatorBlockEntity.tick(world1, pos, state1, be));
     }
 
     @Override

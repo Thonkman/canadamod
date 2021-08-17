@@ -1,6 +1,5 @@
 package canadamod.canadamod.block.carbonator;
 
-import net.minecraft.screen.ArrayPropertyDelegate;
 import canadamod.canadamod.registry.CanadamodBlocks;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
@@ -9,12 +8,14 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventories;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.screen.ArrayPropertyDelegate;
 import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 
 public class CarbonatorBlockEntity extends BlockEntity implements NamedScreenHandlerFactory, ImplementedInventory {
     private final DefaultedList<ItemStack> inventory = DefaultedList.ofSize(9, ItemStack.EMPTY);
@@ -29,7 +30,10 @@ public class CarbonatorBlockEntity extends BlockEntity implements NamedScreenHan
     @Override
     public DefaultedList<ItemStack> getItems() {
         return inventory;
+    }
 
+    public static void tick(World world, BlockPos pos, BlockState state, CarbonatorBlockEntity be) {
+        System.out.println("ticked");
     }
 
     //These Methods are from the NamedScreenHandlerFactory Interface

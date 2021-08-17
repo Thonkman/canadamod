@@ -93,6 +93,7 @@ public class CarbonatorScreenHandler extends ScreenHandler {
             return stack.isOf(Items.POTION) || stack.isOf(Items.SPLASH_POTION) || stack.isOf(Items.LINGERING_POTION) || stack.isOf(Items.GLASS_BOTTLE);
         }
     }
+
     //TODO: Make registry that contains carbonator ingredients/fuels
     static class IngredientSlot extends Slot {
         public IngredientSlot(Inventory inventory, int i, int j, int k) {
@@ -107,6 +108,7 @@ public class CarbonatorScreenHandler extends ScreenHandler {
             return 64;
         }
     }
+    
     static class FuelSlot extends Slot {
         public FuelSlot(Inventory inventory, int i, int j, int k) {
             super(inventory, i, j, k);
