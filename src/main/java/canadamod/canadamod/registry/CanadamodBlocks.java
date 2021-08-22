@@ -31,7 +31,7 @@ public class CanadamodBlocks {
     }
 
     //to be used later
-    @SuppressWarnings({"unused", "EmptyMethod"})
+    @SuppressWarnings("EmptyMethod")
     public static void registerBlocks() {
 
     }
