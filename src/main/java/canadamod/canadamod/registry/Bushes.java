@@ -7,7 +7,6 @@ import canadamod.canadamod.block.plant.GrowingBerryBush;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.Material;
-import net.minecraft.block.TallPlantBlock;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.shape.VoxelShape;
@@ -20,11 +19,11 @@ public class Bushes {
 
     private static final AbstractBlock.Settings berryBushSettings = AbstractBlock.Settings.of(Material.PLANT).ticksRandomly().noCollision().sounds(BlockSoundGroup.SWEET_BERRY_BUSH);
 
-    public static final TallPlantBlock DOUBLE_BUSH = new DoubleBerryBush(berryBushSettings);
+    public static final DoubleBerryBush DOUBLE_SASKATOON_BERRY_BUSH = new DoubleBerryBush(berryBushSettings, 3);
 
     //bushes
     public static final GrowingBerryBush SASKATOON_BERRY_BUSH = new GrowingBerryBush("saskatoonBerryBush", berryBushSettings, CanadamodItems.SASKATOON_BERRIES, CanadamodItems.UNRIPE_SASKATOON_BERRIES,
-            5, SMALL_SWEET_BERRY, LARGE_SWEET_BERRY, 2, false, DOUBLE_BUSH);
+            5, SMALL_SWEET_BERRY, LARGE_SWEET_BERRY, 2, false, DOUBLE_SASKATOON_BERRY_BUSH);
     public static final BasicBerryBush STRAWBERRY_BUSH = new BasicBerryBush("strawberryBush", berryBushSettings, CanadamodItems.STRAWBERRIES,
                 3, SMALL_SWEET_BERRY, LARGE_STRAWBERRY, 1, false);
     public static final BasicBerryBush RASPBERRY_BUSH = new BasicBerryBush("raspberryBush", berryBushSettings, CanadamodItems.RASPBERRIES,
@@ -39,8 +38,7 @@ public class Bushes {
         RASPBERRY_BUSH.setBerryType(CanadamodItems.RASPBERRIES);
         BLACKBERRY_BUSH.setBerryType(CanadamodItems.BLACKBERRIES);
 
-        Registry.register(Registry.BLOCK, Canadamod.getIdentifier("l"), DOUBLE_BUSH);
-
+        Registry.register(Registry.BLOCK, Canadamod.getIdentifier("double_saskatoon_berry_bush"), DOUBLE_SASKATOON_BERRY_BUSH);
         Registry.register(Registry.BLOCK, Canadamod.getIdentifier("saskatoon_berry_bush"), SASKATOON_BERRY_BUSH);
         Registry.register(Registry.BLOCK, Canadamod.getIdentifier("strawberry_bush"), STRAWBERRY_BUSH);
         Registry.register(Registry.BLOCK, Canadamod.getIdentifier("raspberry_bush"), RASPBERRY_BUSH);

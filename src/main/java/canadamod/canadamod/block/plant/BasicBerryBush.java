@@ -5,7 +5,6 @@ import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Fertilizable;
 import net.minecraft.block.PlantBlock;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.client.render.RenderLayer;
@@ -36,7 +35,7 @@ import java.util.List;
 import java.util.Random;
 
 @SuppressWarnings("deprecation")
-public class BasicBerryBush extends PlantBlock implements Fertilizable {
+public class BasicBerryBush extends PlantBlock implements BerryBush {
     protected Item berryType;
     protected Item unripeBerryType;
     protected static final IntProperty BERRY_AGE = IntProperty.of("age", 0 ,10);
@@ -283,7 +282,62 @@ public class BasicBerryBush extends PlantBlock implements Fertilizable {
     @Override
     public void grow(ServerWorld world, Random random, BlockPos pos, BlockState state) {
         int newAge = Math.min(maxBerryAge, state.get(BERRY_AGE) + 1);
+        grow(world, random, pos, state, newAge);
+    }
+
+    @Override
+    public void grow(ServerWorld world, Random random, BlockPos pos, BlockState state, Integer newAge) {
         world.setBlockState(pos, state.with(BERRY_AGE, newAge), 2);
+    }
+
+    @Override
+    public Item getBerryType() {
+        return berryType;
+    }
+
+    @Override
+    public Item getUnripeBerryType() {
+        return unripeBerryType;
+    }
+
+    @Override
+    public int getBerryAge(BlockState state) {
+        return state.get(BERRY_AGE);
+    }
+
+    @Override
+    public IntProperty getBerryAgeProperty() {
+        return BERRY_AGE;
+    }
+
+    @Override
+    public int getMaxBerryAge() {
+        return maxBerryAge;
+    }
+
+    @Override
+    public VoxelShape getSmallShape() {
+        return smallShape;
+    }
+
+    @Override
+    public VoxelShape getLargeShape() {
+        return largeShape;
+    }
+
+    @Override
+    public int getSizeChangeAge() {
+        return sizeChangeAge;
+    }
+
+    @Override
+    public boolean isSpiky() {
+        return spiky;
+    }
+
+    @Override
+    public DamageSource getDamageSource() {
+        return damageSource;
     }
 
     /**
