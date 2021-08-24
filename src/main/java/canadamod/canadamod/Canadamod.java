@@ -1,6 +1,5 @@
 package canadamod.canadamod;
 
-import canadamod.canadamod.registry.Bushes;
 import canadamod.canadamod.registry.CanadamodBlocks;
 import canadamod.canadamod.registry.CanadamodItems;
 import canadamod.canadamod.registry.Sounds;
@@ -17,7 +16,6 @@ public class Canadamod implements ModInitializer {
     @Override
     public void onInitialize() {
         CanadamodItems.registerItems();
-        Bushes.registerBushes();
         Sounds.registerSounds();
         CanadamodBlocks.registerBlocks();
     }

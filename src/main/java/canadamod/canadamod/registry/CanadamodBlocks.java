@@ -30,9 +30,7 @@ public class CanadamodBlocks {
         CARBONATOR_ENTITY = Registry.register(Registry.BLOCK_ENTITY_TYPE, CARBONATOR, BlockEntityType.Builder.create(CarbonatorBlockEntity::new, CARBONATOR_BLOCK).build(null));
     }
 
-    //to be used later
-    @SuppressWarnings("EmptyMethod")
     public static void registerBlocks() {
-
+        Bushes.registerBushes();
     }
 }

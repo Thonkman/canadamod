@@ -34,11 +34,12 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
-@SuppressWarnings("deprecation")
+@SuppressWarnings({"deprecation", "unused"})
 public class BasicBerryBush extends PlantBlock implements BerryBush {
     private static final Vec3d BERRY_BUSH_SLOWING_VECTOR = new Vec3d(0.5D, 0.25D, 0.5D);
     //chance to grow is one in growChance
     private static final int growChance = 5;
+    protected static final int maxBerryAmount = 3;
 
     protected Item berryType;
     protected Item unripeBerryType;
@@ -49,7 +50,6 @@ public class BasicBerryBush extends PlantBlock implements BerryBush {
     protected final int sizeChangeAge;
     protected final boolean spiky;
     protected final DamageSource damageSource;
-    protected final String name;
 
     //animals that can move through bushes without being slowed
     public static final List<EntityType<?>> SMALL_ENTITIES = Arrays.asList(new EntityType<?>[]{
@@ -73,22 +73,34 @@ public class BasicBerryBush extends PlantBlock implements BerryBush {
      * @param largeShape large voxel shape for the bush
      * @param sizeChangeAge the age when the bush switches from smallShape to largeShape, this will also be the age it resets to when berries are picked
      */
-    public BasicBerryBush(String name, AbstractBlock.Settings settings, Item berryType, int maxBerryAge, VoxelShape smallShape, VoxelShape largeShape, int sizeChangeAge, boolean spiky) {
-        this(name, settings, berryType, null, maxBerryAge, smallShape, largeShape, sizeChangeAge, spiky);
+    public BasicBerryBush(AbstractBlock.Settings settings, Item berryType, int maxBerryAge, VoxelShape smallShape, VoxelShape largeShape, int sizeChangeAge) {
+        this(settings, berryType, null, maxBerryAge, smallShape, largeShape, sizeChangeAge, false, null);
+    }
+
+    public BasicBerryBush(AbstractBlock.Settings settings, Item berryType, int maxBerryAge, VoxelShape smallShape, VoxelShape largeShape, int sizeChangeAge, DamageSourceTwoElectricBoogaloo damageSource) {
+        this(settings, berryType, null, maxBerryAge, smallShape, largeShape, sizeChangeAge, true, damageSource);
+    }
+
+    public BasicBerryBush(AbstractBlock.Settings settings, Item berryType, Item unripeBerryType, int maxBerryAge, VoxelShape smallShape, VoxelShape largeShape, int sizeChangeAge, DamageSourceTwoElectricBoogaloo damageSource) {
+        this(settings, berryType, unripeBerryType, maxBerryAge, smallShape, largeShape, sizeChangeAge, true, damageSource);
+    }
+
+    public BasicBerryBush(AbstractBlock.Settings settings, Item berryType, Item unripeBerryType, int maxBerryAge, VoxelShape smallShape, VoxelShape largeShape, int sizeChangeAge) {
+        this(settings, berryType, unripeBerryType, maxBerryAge, smallShape, largeShape, sizeChangeAge, false, null);
     }
 
     /**
      * secondary berry bush constructor
-     * @param name the name of the bush, this should be in the format {@code somethingBerryBush}
-     * @param settings block settings for this berry bush
+     * * @param settings block settings for this berry bush
      * @param berryType which berries will be given when this bush is picked from
      * @param unripeBerryType which type of berries will be given when this bush is picked from, but not yet fully grown
      * @param maxBerryAge maximum age bush can grow to
      * @param smallShape small voxel shape for the bush
      * @param largeShape large voxel shape for the bush
      * @param sizeChangeAge the age when the bush switches from smallShape to largeShape, this will also be the age it resets to when berries are picked
+     * @param damageSource the damage source for when a player is poked by the bush's thorns
      */
-    public BasicBerryBush(String name, AbstractBlock.Settings settings, Item berryType, Item unripeBerryType, int maxBerryAge, VoxelShape smallShape, VoxelShape largeShape, int sizeChangeAge, boolean spiky) {
+    public BasicBerryBush(AbstractBlock.Settings settings, Item berryType, Item unripeBerryType, int maxBerryAge, VoxelShape smallShape, VoxelShape largeShape, int sizeChangeAge, boolean spiky, DamageSourceTwoElectricBoogaloo damageSource) {
         //add nonOpaque to settings to ensure that the bush isn't considered a solid block when rendering
         super(settings.nonOpaque());
         this.berryType = berryType;
@@ -98,8 +110,7 @@ public class BasicBerryBush extends PlantBlock implements BerryBush {
         this.unripeBerryType = unripeBerryType;
         this.sizeChangeAge = sizeChangeAge;
         this.spiky = spiky;
-        this.name = name;
-        this.damageSource = this.spiky ? new DamageSourceTwoElectricBoogaloo(name) : null;
+        this.damageSource = this.spiky ? damageSource : null;
         //set default age to 0
         this.setDefaultState((this.stateManager.getDefaultState()).with(BERRY_AGE, 0));
         //ensure cutout texture is rendered
@@ -215,26 +226,24 @@ public class BasicBerryBush extends PlantBlock implements BerryBush {
             return ActionResult.PASS;
         } else if (currentBerryAge > 1) {
             //otherwise, give berries/unripe berries
-            return pickBerries(pos, world, state);
+            return pickBerries(pos, world, state, berryType, unripeBerryType, maxBerryAmount, maxBerryAge, sizeChangeAge, BERRY_AGE);
         } else {
             //otherwise, do default use action from superclass
             return super.onUse(state, world, pos, player, hand, hit);
         }
     }
 
-    public ActionResult pickBerries(BlockPos pos, World world, BlockState state) {
-        //pick random sound
-        final SoundEvent sound = selectPickSound();
-
-        //random pitch, default volume of 1
-        world.playSound(null, pos, sound, SoundCategory.BLOCKS, 1.0F, 0.8F + world.random.nextFloat() * 0.4F);
+    public static ActionResult pickBerries(BlockPos pos, World world, BlockState state, Item berryType, Item unripeBerryType, int maxBerryAmount, int maxBerryAge, int resetAge, IntProperty berryAge) {
+        //play randomly picked sound
+        world.playSound(null, pos, selectPickSound(), SoundCategory.BLOCKS, 1.0F, 0.8F + world.random.nextFloat() * 0.4F);
 
         //pick berry amount
         //up to three berries
-        int berryAmount = world.random.nextInt(4);
+        int berryAmount = world.random.nextInt(maxBerryAmount + 1);
+        final int currentBerryAge = state.get(berryAge);
 
         //if growing not finished give unripe berries
-        if (hasRandomTicks(state)) {
+        if (currentBerryAge < maxBerryAge) {
             //if we have an unripe berry type, provide unripe berries and maybe one berry
             //if we don't, ensure a berry
             boolean giveRipeBerry = true;
@@ -245,7 +254,7 @@ public class BasicBerryBush extends PlantBlock implements BerryBush {
             }
 
             //if age is one under maximum, have a chance of getting a ripe berry
-            if (state.get(BERRY_AGE) == maxBerryAge - 1 && giveRipeBerry) {
+            if (currentBerryAge == maxBerryAge - 1 && giveRipeBerry) {
                 dropStack(world, pos, new ItemStack(berryType, berryAmount));
             }
         } else {
@@ -255,7 +264,7 @@ public class BasicBerryBush extends PlantBlock implements BerryBush {
         }
 
         //reset berry growth; they were just picked
-        world.setBlockState(pos, state.with(BERRY_AGE, sizeChangeAge), 2);
+        world.setBlockState(pos, state.with(berryAge, resetAge), 2);
         return ActionResult.success(world.isClient);
     }
 
