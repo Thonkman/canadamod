@@ -3,12 +3,8 @@ package canadamod.canadamod.block.plant;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.TallPlantBlock;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
@@ -19,10 +15,10 @@ import net.minecraft.world.World;
 import java.util.Random;
 
 public class GrowingBerryBush extends BasicBerryBush {
-    private final TallPlantBlock futureBush;
+    private final DoubleBerryBush futureBush;
 
-    public GrowingBerryBush(String name, Settings settings, Item berryType, Item unripeBerryType, int maxBerryAge, VoxelShape smallShape, VoxelShape largeShape, int sizeChangeAge, boolean spiky, TallPlantBlock bush) {
-        super(name, settings, berryType, unripeBerryType, maxBerryAge, smallShape, largeShape, sizeChangeAge, spiky);
+    public GrowingBerryBush(Settings settings, VoxelShape smallShape, VoxelShape largeShape, int sizeChangeAge, DoubleBerryBush bush) {
+        super(bush.getBushName(), settings, bush.getBerryType(), bush.getUnripeBerryType(), bush.getMaxBerryAge(), smallShape, largeShape, sizeChangeAge, bush.isSpiky());
         this.futureBush = bush;
     }
 
@@ -54,7 +50,7 @@ public class GrowingBerryBush extends BasicBerryBush {
         }
     }
 
-    //TODO: AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+    //TODO: aaaaaaaaaaaaaaaaaaaaaaa
     @Override
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         if (berryType == null) {
@@ -62,54 +58,18 @@ public class GrowingBerryBush extends BasicBerryBush {
         }
 
         final int currentBerryAge = state.get(BERRY_AGE);
-        final boolean canGrow = hasRandomTicks(state);
         //if bone meal is allowed to be used, grow plant and pass action
-        if (canGrow && player.getStackInHand(hand).isOf(Items.BONE_MEAL)) {
-            System.out.println(maxBerryAge);
+        if (hasRandomTicks(state) && player.getStackInHand(hand).isOf(Items.BONE_MEAL)) {
             final int newAge = Math.min(maxBerryAge, currentBerryAge + 1);
-            System.out.println(newAge);
             if (newAge < maxBerryAge) {
                 world.setBlockState(pos, state.with(BERRY_AGE, newAge), 2);
             } else {
                 TallPlantBlock.placeAt(world, futureBush.getDefaultState(), pos, 2);
             }
             return ActionResult.PASS;
-            //otherwise, give berries/unripe berries
         } else if (currentBerryAge > 1) {
-            //pick random sound
-            final SoundEvent sound = selectPickSound();
-
-            //random pitch, default volume of 1
-            world.playSound(null, pos, sound, SoundCategory.BLOCKS, 1.0F, 0.8F + world.random.nextFloat() * 0.4F);
-
-            //pick berry amount
-            //up to three berries
-            int berryAmount = world.random.nextInt(4);
-
-            //if growing not finished give unripe berries
-            if (canGrow) {
-                //if we have an unripe berry type, provide unripe berries and maybe one berry
-                //if we don't, ensure a berry
-                boolean giveRipeBerry = true;
-                if (unripeBerryType != null) {
-                    dropStack(world, pos, new ItemStack(unripeBerryType, berryAmount));
-                    berryAmount = 1;
-                    giveRipeBerry = world.random.nextInt(2) == 0;
-                }
-
-                //if age is one under maximum, have a chance of getting a ripe berry
-                if (currentBerryAge == maxBerryAge - 1 && giveRipeBerry) {
-                    dropStack(world, pos, new ItemStack(berryType, berryAmount));
-                }
-            } else {
-                //guarantee two berries
-                berryAmount += 2;
-                dropStack(world, pos, new ItemStack(berryType, berryAmount));
-            }
-
-            //reset berry growth; they were just picked
-            world.setBlockState(pos, state.with(BERRY_AGE, sizeChangeAge), 2);
-            return ActionResult.success(world.isClient);
+            //otherwise, give berries/unripe berries
+            return super.pickBerries(pos, world, state);
         } else {
             //otherwise, do default use action from superclass
             return super.onUse(state, world, pos, player, hand, hit);

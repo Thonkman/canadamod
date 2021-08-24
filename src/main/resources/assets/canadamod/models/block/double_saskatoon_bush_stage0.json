@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/cross",
+  "textures": {
+    "cross": "canadamod:block/double_saskatoon_bush_stage0"
+  }
+}

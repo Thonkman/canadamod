@@ -19,11 +19,12 @@ public class Bushes {
 
     private static final AbstractBlock.Settings berryBushSettings = AbstractBlock.Settings.of(Material.PLANT).ticksRandomly().noCollision().sounds(BlockSoundGroup.SWEET_BERRY_BUSH);
 
-    public static final DoubleBerryBush DOUBLE_SASKATOON_BERRY_BUSH = new DoubleBerryBush(berryBushSettings, 3);
+    public static final DoubleBerryBush DOUBLE_SASKATOON_BERRY_BUSH = new DoubleBerryBush(berryBushSettings, 3, CanadamodItems.SASKATOON_BERRIES, CanadamodItems.UNRIPE_SASKATOON_BERRIES,
+            false, "saskatoonBerryBush");
 
     //bushes
-    public static final GrowingBerryBush SASKATOON_BERRY_BUSH = new GrowingBerryBush("saskatoonBerryBush", berryBushSettings, CanadamodItems.SASKATOON_BERRIES, CanadamodItems.UNRIPE_SASKATOON_BERRIES,
-            5, SMALL_SWEET_BERRY, LARGE_SWEET_BERRY, 2, false, DOUBLE_SASKATOON_BERRY_BUSH);
+    public static final GrowingBerryBush SASKATOON_BERRY_BUSH = new GrowingBerryBush(berryBushSettings,
+            SMALL_SWEET_BERRY, LARGE_SWEET_BERRY, 2, DOUBLE_SASKATOON_BERRY_BUSH);
     public static final BasicBerryBush STRAWBERRY_BUSH = new BasicBerryBush("strawberryBush", berryBushSettings, CanadamodItems.STRAWBERRIES,
                 3, SMALL_SWEET_BERRY, LARGE_STRAWBERRY, 1, false);
     public static final BasicBerryBush RASPBERRY_BUSH = new BasicBerryBush("raspberryBush", berryBushSettings, CanadamodItems.RASPBERRIES,
@@ -34,6 +35,8 @@ public class Bushes {
     public static void registerBushes() {
         SASKATOON_BERRY_BUSH.setBerryType(CanadamodItems.SASKATOON_BERRIES);
         SASKATOON_BERRY_BUSH.setUnripeBerryType(CanadamodItems.UNRIPE_SASKATOON_BERRIES);
+        DOUBLE_SASKATOON_BERRY_BUSH.setBerryType(CanadamodItems.SASKATOON_BERRIES);
+        DOUBLE_SASKATOON_BERRY_BUSH.setUnripeBerryType(CanadamodItems.SASKATOON_BERRIES);
         STRAWBERRY_BUSH.setBerryType(CanadamodItems.STRAWBERRIES);
         RASPBERRY_BUSH.setBerryType(CanadamodItems.RASPBERRIES);
         BLACKBERRY_BUSH.setBerryType(CanadamodItems.BLACKBERRIES);

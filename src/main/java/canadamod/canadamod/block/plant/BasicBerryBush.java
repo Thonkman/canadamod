@@ -36,6 +36,10 @@ import java.util.Random;
 
 @SuppressWarnings("deprecation")
 public class BasicBerryBush extends PlantBlock implements BerryBush {
+    private static final Vec3d BERRY_BUSH_SLOWING_VECTOR = new Vec3d(0.5D, 0.25D, 0.5D);
+    //chance to grow is one in growChance
+    private static final int growChance = 5;
+
     protected Item berryType;
     protected Item unripeBerryType;
     protected static final IntProperty BERRY_AGE = IntProperty.of("age", 0 ,10);
@@ -158,7 +162,7 @@ public class BasicBerryBush extends PlantBlock implements BerryBush {
     public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
         int age = state.get(BERRY_AGE);
         //if the age isn't maximum and the light level is high enough grow the bush
-        if (age <= maxBerryAge && random.nextInt(5) == 0 && world.getBaseLightLevel(pos.up(), 0) >= 9) {
+        if (age <= maxBerryAge && random.nextInt(growChance) == 0 && world.getBaseLightLevel(pos.up(), 0) >= 9) {
             world.setBlockState(pos, state.with(BERRY_AGE, age + 1), 2);
         }
     }
@@ -172,7 +176,7 @@ public class BasicBerryBush extends PlantBlock implements BerryBush {
         final EntityType<?> type = entity.getType();
 
         if (entity instanceof LivingEntity && !SMALL_ENTITIES.contains(type)) {
-            entity.slowMovement(state, new Vec3d(0.5D, 0.25D, 0.5D));
+            entity.slowMovement(state, BERRY_BUSH_SLOWING_VECTOR);
             //damage as well if our bush is thorny
             if (spiky) {
                 entity.damage(damageSource, 1.0F);
@@ -204,52 +208,55 @@ public class BasicBerryBush extends PlantBlock implements BerryBush {
         }
 
         final int currentBerryAge = state.get(BERRY_AGE);
-        final boolean canGrow = hasRandomTicks(state);
         //if bone meal is allowed to be used, grow plant and pass action
-        if (canGrow && player.getStackInHand(hand).isOf(Items.BONE_MEAL)) {
+        if (hasRandomTicks(state) && player.getStackInHand(hand).isOf(Items.BONE_MEAL)) {
             final int newAge = Math.min(maxBerryAge, currentBerryAge + 1);
             world.setBlockState(pos, state.with(BERRY_AGE, newAge), 2);
             return ActionResult.PASS;
-        //otherwise, give berries/unripe berries
         } else if (currentBerryAge > 1) {
-            //pick random sound
-            final SoundEvent sound = selectPickSound();
-
-            //random pitch, default volume of 1
-            world.playSound(null, pos, sound, SoundCategory.BLOCKS, 1.0F, 0.8F + world.random.nextFloat() * 0.4F);
-
-            //pick berry amount
-            //up to three berries
-            int berryAmount = world.random.nextInt(4);
-
-            //if growing not finished give unripe berries
-            if (canGrow) {
-                //if we have an unripe berry type, provide unripe berries and maybe one berry
-                //if we don't, ensure a berry
-                boolean giveRipeBerry = true;
-                if (unripeBerryType != null) {
-                    dropStack(world, pos, new ItemStack(unripeBerryType, berryAmount));
-                    berryAmount = 1;
-                    giveRipeBerry = world.random.nextInt(2) == 0;
-                }
-
-                //if age is one under maximum, have a chance of getting a ripe berry
-                if (currentBerryAge == maxBerryAge - 1 && giveRipeBerry) {
-                    dropStack(world, pos, new ItemStack(berryType, berryAmount));
-                }
-            } else {
-                //guarantee two berries
-                berryAmount += 2;
-                dropStack(world, pos, new ItemStack(berryType, berryAmount));
-            }
-
-            //reset berry growth; they were just picked
-            world.setBlockState(pos, state.with(BERRY_AGE, sizeChangeAge), 2);
-            return ActionResult.success(world.isClient);
+            //otherwise, give berries/unripe berries
+            return pickBerries(pos, world, state);
         } else {
             //otherwise, do default use action from superclass
             return super.onUse(state, world, pos, player, hand, hit);
         }
+    }
+
+    public ActionResult pickBerries(BlockPos pos, World world, BlockState state) {
+        //pick random sound
+        final SoundEvent sound = selectPickSound();
+
+        //random pitch, default volume of 1
+        world.playSound(null, pos, sound, SoundCategory.BLOCKS, 1.0F, 0.8F + world.random.nextFloat() * 0.4F);
+
+        //pick berry amount
+        //up to three berries
+        int berryAmount = world.random.nextInt(4);
+
+        //if growing not finished give unripe berries
+        if (hasRandomTicks(state)) {
+            //if we have an unripe berry type, provide unripe berries and maybe one berry
+            //if we don't, ensure a berry
+            boolean giveRipeBerry = true;
+            if (unripeBerryType != null) {
+                dropStack(world, pos, new ItemStack(unripeBerryType, berryAmount));
+                berryAmount = 1;
+                giveRipeBerry = world.random.nextInt(2) == 0;
+            }
+
+            //if age is one under maximum, have a chance of getting a ripe berry
+            if (state.get(BERRY_AGE) == maxBerryAge - 1 && giveRipeBerry) {
+                dropStack(world, pos, new ItemStack(berryType, berryAmount));
+            }
+        } else {
+            //guarantee two berries
+            berryAmount += 2;
+            dropStack(world, pos, new ItemStack(berryType, berryAmount));
+        }
+
+        //reset berry growth; they were just picked
+        world.setBlockState(pos, state.with(BERRY_AGE, sizeChangeAge), 2);
+        return ActionResult.success(world.isClient);
     }
 
     @Override
@@ -343,7 +350,7 @@ public class BasicBerryBush extends PlantBlock implements BerryBush {
     /**
      * this class is an easy way to make a new damage source, as the constructor in {@link DamageSource} itself is protected
      */
-    private static class DamageSourceTwoElectricBoogaloo extends DamageSource {
+    public static class DamageSourceTwoElectricBoogaloo extends DamageSource {
         public DamageSourceTwoElectricBoogaloo(String name) {
             super(name);
         }

@@ -11,6 +11,7 @@ import net.minecraft.util.shape.VoxelShape;
 
 import java.util.Random;
 
+@SuppressWarnings("unused")
 public interface BerryBush extends Fertilizable {
     Item getBerryType();
     Item getUnripeBerryType();

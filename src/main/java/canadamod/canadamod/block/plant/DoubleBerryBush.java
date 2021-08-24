@@ -11,8 +11,10 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvent;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.util.ActionResult;
@@ -35,10 +37,28 @@ public class DoubleBerryBush extends TallPlantBlock implements BerryBush {
 
     private static final IntProperty BERRY_AGE = IntProperty.of("berry_age", 0, 3);
     private final int maxBerryAge;
+    private Item berryType;
+    private Item unripeBerryType;
+    private final boolean spiky;
+    private final String name;
+    private final DamageSource damageSource;
 
-    public DoubleBerryBush(Settings settings, int maxBerryAge) {
+    public DoubleBerryBush(Settings settings, int maxBerryAge, Item berryType, Item unripeBerryType, boolean spiky, String name) {
         super(settings);
         this.maxBerryAge = maxBerryAge;
+        this.berryType = berryType;
+        this.unripeBerryType = unripeBerryType;
+        this.spiky = spiky;
+        this.name = name;
+        this.damageSource = new BasicBerryBush.DamageSourceTwoElectricBoogaloo(name);
+    }
+
+    public void setBerryType(Item berryType) {
+        this.berryType = berryType;
+    }
+
+    public void setUnripeBerryType(Item unripeBerryType) {
+        this.unripeBerryType = unripeBerryType;
     }
 
     @Override
@@ -97,21 +117,69 @@ public class DoubleBerryBush extends TallPlantBlock implements BerryBush {
         world.setBlockState(pos, state.with(BERRY_AGE, newAge), 2);
     }
 
-    //TODO: actual logic
+    //TODO: copied from BasicBerryBush
     @Override
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-        world.playSound(null, pos, BasicBerryBush.selectPickSound(), SoundCategory.BLOCKS, 1.0F, 0.8F + world.random.nextFloat() * 0.4F);
-        return ActionResult.PASS;
+        if (berryType == null) {
+            throw new RuntimeException("parameter berryType is null, use method setBerryType(Item) to ensure that it is set before the berry bush is registered");
+        }
+
+        final int currentBerryAge = state.get(BERRY_AGE);
+        //if bone meal is allowed to be used, grow plant and pass action
+        if (hasRandomTicks(state) && player.getStackInHand(hand).isOf(Items.BONE_MEAL)) {
+            final int newAge = Math.min(maxBerryAge, currentBerryAge + 1);
+            world.setBlockState(pos, state.with(BERRY_AGE, newAge), 2);
+            return ActionResult.PASS;
+        } else if (currentBerryAge > 1) {
+            //otherwise, give berries/unripe berries
+            //pick random sound
+            final SoundEvent sound = BasicBerryBush.selectPickSound();
+
+            //random pitch, default volume of 1
+            world.playSound(null, pos, sound, SoundCategory.BLOCKS, 1.0F, 0.8F + world.random.nextFloat() * 0.4F);
+
+            //pick berry amount
+            //up to three berries
+            int berryAmount = world.random.nextInt(7);
+
+            //if growing not finished give unripe berries
+            if (hasRandomTicks(state)) {
+                //if we have an unripe berry type, provide unripe berries and maybe one berry
+                //if we don't, ensure a berry
+                boolean giveRipeBerry = true;
+                if (unripeBerryType != null) {
+                    dropStack(world, pos, new ItemStack(unripeBerryType, berryAmount));
+                    berryAmount = 1;
+                    giveRipeBerry = world.random.nextInt(2) == 0;
+                }
+
+                //if age is one under maximum, have a chance of getting a ripe berry
+                if (state.get(BERRY_AGE) == maxBerryAge - 1 && giveRipeBerry) {
+                    dropStack(world, pos, new ItemStack(berryType, berryAmount));
+                }
+            } else {
+                //guarantee two berries
+                berryAmount += 2;
+                dropStack(world, pos, new ItemStack(berryType, berryAmount));
+            }
+
+            //reset berry growth; they were just picked
+            world.setBlockState(pos, state.with(BERRY_AGE, 0), 2);
+            return ActionResult.success(world.isClient);
+        } else {
+            //otherwise, do default use action from superclass
+            return super.onUse(state, world, pos, player, hand, hit);
+        }
     }
 
     @Override
     public Item getBerryType() {
-        return null;
+        return berryType;
     }
 
     @Override
     public Item getUnripeBerryType() {
-        return null;
+        return unripeBerryType;
     }
 
     @Override
@@ -121,12 +189,12 @@ public class DoubleBerryBush extends TallPlantBlock implements BerryBush {
 
     @Override
     public IntProperty getBerryAgeProperty() {
-        return null;
+        return BERRY_AGE;
     }
 
     @Override
     public int getMaxBerryAge() {
-        return 0;
+        return maxBerryAge;
     }
 
     @Override
@@ -139,6 +207,10 @@ public class DoubleBerryBush extends TallPlantBlock implements BerryBush {
         return VoxelShapes.fullCube();
     }
 
+    /**
+     * DO NOT USE, SIZE CHANGE AGE DOES NOT APPLY TO DOUBLE BERRY BUSHES
+     * @return 0
+     */
     @Override
     public int getSizeChangeAge() {
         return 0;
@@ -146,11 +218,15 @@ public class DoubleBerryBush extends TallPlantBlock implements BerryBush {
 
     @Override
     public boolean isSpiky() {
-        return false;
+        return spiky;
     }
 
     @Override
     public DamageSource getDamageSource() {
-        return null;
+        return damageSource;
+    }
+
+    public String getBushName() {
+        return name;
     }
 }
