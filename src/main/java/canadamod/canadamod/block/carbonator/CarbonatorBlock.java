@@ -17,6 +17,7 @@ import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
+@SuppressWarnings("deprecation")
 public class CarbonatorBlock extends BlockWithEntity {
     public CarbonatorBlock(Settings settings) {
         super(settings);
@@ -35,7 +36,7 @@ public class CarbonatorBlock extends BlockWithEntity {
 
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
-        return checkType(type, CanadamodBlocks.CARBONATOR_ENTITY, (world1, pos, state1, be) -> CarbonatorBlockEntity.tick(world1, pos, state1, be));
+        return checkType(type, CanadamodBlocks.CARBONATOR_ENTITY, CarbonatorBlockEntity::tick);
     }
 
     @Override

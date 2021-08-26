@@ -19,8 +19,6 @@ import net.minecraft.server.network.ServerPlayerEntity;
 
 public class CarbonatorScreenHandler extends ScreenHandler {
     private final Inventory inventory;
-    private PropertyDelegate propertyDelegate;
-    private final Slot ingredientSlot;
 
     //This constructor gets called on the client when the server wants it to open the screenHandler,
     //The client will call the other constructor with an empty Inventory and the screenHandler will automatically
@@ -38,11 +36,10 @@ public class CarbonatorScreenHandler extends ScreenHandler {
         checkDataCount(propertyDelegate, 2);
         this.inventory = inventory;
         //hello
-        this.propertyDelegate = propertyDelegate; //whee
         this.addSlot(new PotionSlot(inventory, 0, 57, 51));
         this.addSlot(new PotionSlot(inventory, 1, 79, 58));
         this.addSlot(new PotionSlot(inventory, 2, 102, 51));
-        this.ingredientSlot = this.addSlot(new IngredientSlot(inventory, 3, 79, 17));
+        this.addSlot(new IngredientSlot(inventory, 3, 79, 17));
         this.addSlot(new FuelSlot(inventory, 4, 17, 17));
         this.addProperties(propertyDelegate);
         //some inventories do custom logic when a player opens it.
