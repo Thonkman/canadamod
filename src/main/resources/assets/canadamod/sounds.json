@@ -1,17 +1,17 @@
 {
-  "saskatoon_pick_1": {
+  "berry_pick_1": {
     "sounds": [
-      "canadamod:saskatoon_pick_1"
+      "canadamod:berry_pick_1"
     ]
   },
-  "saskatoon_pick_2": {
+  "berry_pick_2": {
     "sounds": [
-      "canadamod:saskatoon_pick_2"
+      "canadamod:berry_pick_2"
     ]
   },
-  "saskatoon_pick_3": {
+  "berry_pick_3": {
     "sounds": [
-      "canadamod:saskatoon_pick_3"
+      "canadamod:berry_pick_3"
     ]
   }
 }
