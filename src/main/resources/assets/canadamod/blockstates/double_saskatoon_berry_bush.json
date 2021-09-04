@@ -1,28 +1,28 @@
 {
   "variants": {
     "half=lower,berry_age=0": {
-      "model": "canadamod:block/double_saskatoon_bush_stage0"
+      "model": "canadamod:block/berry_bush/double_saskatoon_bush_stage0"
     },
     "half=lower,berry_age=1": {
-      "model": "canadamod:block/double_saskatoon_bush_stage1"
+      "model": "canadamod:block/berry_bush/double_saskatoon_bush_stage1"
     },
     "half=lower,berry_age=2": {
-      "model": "canadamod:block/double_saskatoon_bush_stage2"
+      "model": "canadamod:block/berry_bush/double_saskatoon_bush_stage2"
     },
     "half=lower,berry_age=3": {
-      "model": "canadamod:block/double_saskatoon_bush_stage3"
+      "model": "canadamod:block/berry_bush/double_saskatoon_bush_stage3"
     },
     "half=upper,berry_age=0": {
-      "model": "canadamod:block/double_saskatoon_bush_stage0"
+      "model": "canadamod:block/berry_bush/double_saskatoon_bush_stage0"
     },
     "half=upper,berry_age=1": {
-      "model": "canadamod:block/double_saskatoon_bush_stage1"
+      "model": "canadamod:block/berry_bush/double_saskatoon_bush_stage1"
     },
     "half=upper,berry_age=2": {
-      "model": "canadamod:block/double_saskatoon_bush_stage2"
+      "model": "canadamod:block/berry_bush/double_saskatoon_bush_stage2"
     },
     "half=upper,berry_age=3": {
-      "model": "canadamod:block/double_saskatoon_bush_stage3"
+      "model": "canadamod:block/berry_bush/double_saskatoon_bush_stage3"
     }
   }
 }

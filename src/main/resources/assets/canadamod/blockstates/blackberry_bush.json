@@ -1,19 +1,19 @@
 {
   "variants": {
     "age=0": {
-      "model": "canadamod:block/blackberry_bush_stage0"
+      "model": "canadamod:block/berry_bush/blackberry_bush_stage0"
     },
     "age=1": {
-      "model": "canadamod:block/blackberry_bush_stage1"
+      "model": "canadamod:block/berry_bush/blackberry_bush_stage1"
     },
     "age=2": {
-      "model": "canadamod:block/blackberry_bush_stage2"
+      "model": "canadamod:block/berry_bush/blackberry_bush_stage2"
     },
     "age=3": {
-      "model": "canadamod:block/blackberry_bush_stage3"
+      "model": "canadamod:block/berry_bush/blackberry_bush_stage3"
     },
     "age=4": {
-      "model": "canadamod:block/blackberry_bush_stage4"
+      "model": "canadamod:block/berry_bush/blackberry_bush_stage4"
     },
     "age=5": {
       "model": "canadamod:block/none"
